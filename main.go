@@ -14,6 +14,18 @@ type Game struct {
 	Title string `json:"title"`
 }
 
+type Report struct {
+	ID            string `json:"id"`
+	AppID         string `json:"appId"`
+	Timestamp     string `json:"timestamp"`
+	Rating        string `json:"rating"`
+	Notes         string `json:"notes"`
+	OS            string `json:"os"`
+	GPUDriver     string `json:"gpuDriver"`
+	Specs         string `json:"specs"`
+	ProtonVersion string `json:"protonVersion"`
+}
+
 const baseURL = "https://protondb.max-p.me/"
 
 func main() {
@@ -46,6 +58,33 @@ func main() {
 		}
 	}
 
-	fmt.Println(one_game.AppID)
-	fmt.Println(one_game.Title)
+	resp, err = http.Get(baseURL + "games/" + one_game.AppID + "/reports")
+
+	if err != nil {
+		panic(err)
+	}
+
+	body, err = ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var reports []Report
+	err = json.Unmarshal(body, &reports)
+	if err != nil {
+		panic(err)
+	}
+
+	report := reports[0]
+
+	fmt.Println("ID:", report.ID)
+	fmt.Println("AppID:", report.AppID)
+	fmt.Println("Timestamp:", report.Timestamp)
+	fmt.Println("Rating:", report.Rating)
+	fmt.Println("Notes:", report.Notes)
+	fmt.Println("OS:", report.OS)
+	fmt.Println("GPUDriver:", report.GPUDriver)
+	fmt.Println("Specs:", report.Specs)
+	fmt.Println("ProtonVersion:", report.ProtonVersion)
 }
